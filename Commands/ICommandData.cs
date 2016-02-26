@@ -1,10 +1,12 @@
-﻿
-namespace kimandtodd.DG200CSharp
+﻿using kimandtodd.DG200CSharp.commandresults;
+
+namespace kimandtodd.DG200CSharp.commands
 {
     interface ICommandData
     {
         byte[] getCommandData();
-        int getCorrectedExpectedBytes();
+        void addCommandResultData(byte[] bytes, int byteCount);
         int getExpectedSessionCount();
+        BaseCommandResult getLastResult();
     }
 }

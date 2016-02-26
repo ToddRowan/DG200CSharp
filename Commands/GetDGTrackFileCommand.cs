@@ -4,12 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kimandtodd.DG200CSharp
+namespace kimandtodd.DG200CSharp.commands
 {
-    public class GetDGTrackFileCommand : BaseCommandData
+    public class GetDGTrackFileCommand : BaseCommand
     {
         private static byte commandId = 0xB5;
         private int trackIndex = 0;
+
+        /// <summary>
+        /// Constructor. Calls the parent to initialize. 
+        /// </summary>
+        public GetDGTrackFileCommand() : base()
+        {
+
+        }
 
         public new byte[] getCommandData()
         {

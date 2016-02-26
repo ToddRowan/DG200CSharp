@@ -39,14 +39,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandBuffer.cs" />
+    <Compile Include="CommandException.cs" />
     <Compile Include="Commands\BaseCommandData.cs" />
+    <Compile Include="Commands\BaseCommandResult.cs" />
     <Compile Include="Commands\DeleteAllDGTrackFilesCommand.cs" />
     <Compile Include="Commands\GetDGConfigurationCommand.cs" />
+    <Compile Include="Commands\GetDGIDCommandResult.cs" />
     <Compile Include="Commands\GetDGSoftwareVerCommand.cs" />
     <Compile Include="Commands\GetDGTrackFileCommand.cs" />
     <Compile Include="Commands\GetDGTrackHeadersCommand.cs" />
     <Compile Include="Commands\ICommandData.cs" />
+    <Compile Include="Commands\ICommandResult.cs" />
     <Compile Include="Commands\SetDGIDCommand.cs" />
+    <Compile Include="Commands\SetDGIDCommandResult.cs" />
     <Compile Include="IDataOutput.cs" />
     <Compile Include="DG200CheckSumCalculator.cs" />
     <Compile Include="DG200SerialConnection.cs" />

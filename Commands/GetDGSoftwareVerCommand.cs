@@ -4,12 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kimandtodd.DG200CSharp
+namespace kimandtodd.DG200CSharp.commands
 {
-    public class GetDGSoftwareVerCommand : BaseCommandData
+    public class GetDGSoftwareVerCommand : BaseCommand
     {
         private static byte commandId = 0xBC;
         private bool gpsMouse = false;
+
+        /// <summary>
+        /// Constructor. Calls the parent to initialize. 
+        /// </summary>
+        public GetDGSoftwareVerCommand() : base()
+        {
+
+        }
+
         public new byte[] getCommandData()
         {
             return buildCommandArray(assembleCommandData());

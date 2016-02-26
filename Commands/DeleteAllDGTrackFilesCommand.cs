@@ -4,11 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kimandtodd.DG200CSharp
+namespace kimandtodd.DG200CSharp.commands
 {
-    public class DeleteAllDGTrackFilesCommand : BaseCommandData
+    public class DeleteAllDGTrackFilesCommand : BaseCommand
     {
         private static byte commandId = 0xBA;
+
+        /// <summary>
+        /// Constructor. Calls the parent to initiailize internal data.
+        /// </summary>
+        public DeleteAllDGTrackFilesCommand() : base()
+        {
+
+        }
+        
         public new byte[] getCommandData()
         {
             return buildCommandArray(assembleCommandData());
