@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using kimandtodd.DG200CSharp.commandresults;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -18,16 +16,30 @@ namespace kimandtodd.DG200CSharp.commands
         {
 
         }
-        public new byte[] getCommandData()
+
+        /// <summary>
+        /// Gets the command data for the serial connector. 
+        /// </summary>
+        /// <returns>A byte array with the command data.</returns>
+        public override byte[] getCommandData()
         {
             return buildCommandArray(assembleCommandData());
         }
 
+        /// <summary>
+        /// You can request track headers by index value. If you don't the command will start at zero. 
+        /// </summary>
+        /// 
+        /// <param name="newIndex">The track index to set.</param>
         public void setStartingTrackIndex(int newIndex)
         {
             this.startingTrackIndex = newIndex;
         }
 
+        /// <summary>
+        /// Get the current starting track index. 
+        /// </summary>
+        /// <returns>An integer value of the starting index.</returns>
         public int getStartingTrackIndex()
         {
             return this.startingTrackIndex;
@@ -44,6 +56,15 @@ namespace kimandtodd.DG200CSharp.commands
             fullArray[1] = convertedStartTrack[1];
 
             return fullArray;
+        }
+
+        /// <summary>
+        /// Returns the result after executing a command.
+        /// </summary>
+        /// <returns>A GetDGIDCommandResult instance.</returns>
+        public override BaseCommandResult getLastResult()
+        {
+            return new GetDGTrackHeadersCommandResult(this._buf);
         }
     }
 }

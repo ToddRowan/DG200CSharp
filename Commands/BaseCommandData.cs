@@ -1,5 +1,6 @@
 ﻿using System;
 using kimandtodd.DG200CSharp.commandresults;
+using kimandtodd.DG200CSharp.commands.exceptions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -124,7 +125,7 @@ namespace kimandtodd.DG200CSharp.commands
                 this._buf.Position = this._buf.Length;
                 if (!this.isCommandHeader(header))
                 {
-                    throw new kimandtodd.DG200CSharp.commands.exceptions.CommandException("The connection attempt failed. Either the device is not a DG200 or it is a DG200 that is not turned on.");
+                    throw new CommandException("The connection attempt failed. Either the device is not a DG200 or it is a DG200 that is not turned on.");
                 }
             }
             // Once we get enough data in the buffer, evaluate the payload size. 

@@ -30,7 +30,6 @@ namespace kimandtodd.DG200CSharp
             DISCONNECTED
         };
 
-
         /// <summary>
         /// Constructor. Requires the name of the port where the DG200 is connected.
         /// </summary>

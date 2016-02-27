@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using kimandtodd.DG200CSharp.commandresults;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -17,7 +13,12 @@ namespace kimandtodd.DG200CSharp.commands
         {
 
         }
-        public new byte[] getCommandData()
+
+        /// <summary>
+        /// Builds the complete command to send to the system.
+        /// </summary>
+        /// <returns>The complete command byte array.</returns>
+        public override byte[] getCommandData()
         {
             return buildCommandArray(assembleCommandData());
         }
@@ -28,6 +29,15 @@ namespace kimandtodd.DG200CSharp.commands
             fullArray[0] = GetDGConfigurationCommand.commandId;
 
             return fullArray;
+        }
+
+        /// <summary>
+        /// Returns the result after executing a command.
+        /// </summary>
+        /// <returns>A GetDGIDCommandResult instance.</returns>
+        public override BaseCommandResult getLastResult()
+        {
+            return new GetDGConfigurationCommandResult(this._buf);
         }
     }
 }
