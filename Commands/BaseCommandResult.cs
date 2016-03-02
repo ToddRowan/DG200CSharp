@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using kimandtodd.DG200CSharp.commands;
 
@@ -11,14 +8,16 @@ namespace kimandtodd.DG200CSharp.commandresults
     public abstract class BaseCommandResult : ICommandResult
     {
         private bool _successState;
-        protected CommandBuffer _buf;
+        private List<CommandBuffer> _buffers;
 
         protected static int COMMAND_LOCATION = 4;
         protected static int PAYLOAD_START = 5;
 
         protected BaseCommandResult(CommandBuffer resultBuf)
         {
-            this._buf = resultBuf;
+            this._buffers = new List<CommandBuffer>();
+
+            this.addResultBuffer(resultBuf);
             this._successState = false;
         }
 
@@ -30,6 +29,31 @@ namespace kimandtodd.DG200CSharp.commandresults
         public String getErrorMessage()
         {
             return "";
+        }
+
+        public virtual bool startSession()
+        {
+            return false;
+        }
+
+        public virtual void addResultBuffer(CommandBuffer c)
+        {
+            this._buffers.Add(c);
+            if (this._buffers.Count>1)
+            {
+                // On our second buffer, autoinitiate.
+                this.processBuffer();
+            }
+        }
+
+        protected virtual void processBuffer()
+        {
+
+        }
+
+        protected CommandBuffer getCurrentBuffer()
+        {
+            return this._buffers[this._buffers.Count - 1];
         }
     }
 }

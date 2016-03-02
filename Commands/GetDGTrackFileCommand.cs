@@ -19,7 +19,7 @@ namespace kimandtodd.DG200CSharp.commands
 
         }
 
-        public new byte[] getCommandData()
+        public override byte[] getCommandData()
         {
             return buildCommandArray(assembleCommandData());
         }
@@ -45,17 +45,6 @@ namespace kimandtodd.DG200CSharp.commands
             fullArray[1] = convertedTrack[1];
 
             return fullArray;
-        }
-
-        /// <summary>
-        /// This command returns two complete payloads, one after the other.
-        /// This method allows that command to notify the serial processor to keep reading 
-        /// from the buffer after the first session completes. 
-        /// </summary>
-        /// <returns>2</returns>
-        new public int getExpectedSessionCount()
-        {
-            return 2;
         }
     }
 }

@@ -119,9 +119,15 @@ namespace kimandtodd.DG200CSharp
         public void Execute(BaseCommand cmd)
         {
             this._currentCommand = cmd;
-            this.SendMessage(this._currentCommand.getCommandData());
-            while (this.Read())
+            this._currentCommand.initialize();
+            // Change this to while(SendMessage) or something simliar, to let the command dictate how many times to request data from the dg200
+            while (this._currentCommand.startSession())
             {
+                this.SendMessage(this._currentCommand.getCommandData());
+                while (this.Read())
+                {
+                    // put a debug log statement here.
+                }
             }
         }
 

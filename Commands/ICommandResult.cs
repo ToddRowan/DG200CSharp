@@ -10,5 +10,6 @@ namespace kimandtodd.DG200CSharp.commandresults
     {
         bool getSuccess();
         String getErrorMessage();
+        bool startSession();
     }
 }

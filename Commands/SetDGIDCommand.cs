@@ -70,13 +70,12 @@ namespace kimandtodd.DG200CSharp.commands
             Array.Resize(ref this.newId, 8);
         }
 
-        /// <summary>
-        /// Returns the result after executing a command.
-        /// </summary>
-        /// <returns>A GetDGIDCommandResult instance.</returns>
-        public override BaseCommandResult getLastResult()
+        protected override void initializeResult(CommandBuffer c)
         {
-            return new SetDGIDCommandResult(this._buf);
+            // Is there any reason why I want to store the buffer?
+            this._buffers.Add(c);
+            // We should probably never do a conditional add here. 
+            this._currentResult = new SetDGIDCommandResult(c);                        
         }
     }
 }

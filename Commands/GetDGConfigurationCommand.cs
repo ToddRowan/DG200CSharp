@@ -35,9 +35,10 @@ namespace kimandtodd.DG200CSharp.commands
         /// Returns the result after executing a command.
         /// </summary>
         /// <returns>A GetDGIDCommandResult instance.</returns>
-        public override BaseCommandResult getLastResult()
+        protected override void initializeResult(CommandBuffer c)
         {
-            return new GetDGConfigurationCommandResult(this._buf);
+            this._buffers.Add(c);
+            this._currentResult = new GetDGConfigurationCommandResult(c);
         }
     }
 }

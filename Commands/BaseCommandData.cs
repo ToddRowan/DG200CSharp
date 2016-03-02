@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 using kimandtodd.DG200CSharp.commandresults;
 using kimandtodd.DG200CSharp.commands.exceptions;
 
@@ -14,21 +16,36 @@ namespace kimandtodd.DG200CSharp.commands
         private static int HEADERLENGTH = commandHeader.Length;
         private static int FOOTERLENGTH = commandFooter.Length;
 
-        protected CommandBuffer _buf;
+        protected List<CommandBuffer> _buffers;
         private bool _commandHeaderDataEvaluated;
         private bool _sizeDataEvaluated;
 
         protected int _expectedByteCount;
+        protected int _sessionCounter;
+
+        protected BaseCommandResult _currentResult;
 
         /// <summary>
         /// Constructor. Protected because we don't want anyone creating a base class instance.
         /// </summary>
         protected BaseCommand()
         {
-            this._buf = new CommandBuffer();
+            this._buffers = new List<CommandBuffer>();
+            this.initialize();
+        }
+
+        /// <summary>
+        /// Initializes the command. Since commands can be reused, this method resets the command for reuse. 
+        /// </summary>
+        public void initialize()
+        {
+            this._buffers.Clear();            
+
             this._commandHeaderDataEvaluated = false;
             this._sizeDataEvaluated = false;
             this._expectedByteCount = -1; // We don't know yet.
+            this._sessionCounter = 0;
+            this._currentResult = null;
         }
 
         /// <summary>
@@ -79,9 +96,18 @@ namespace kimandtodd.DG200CSharp.commands
         /// The shared method that returns the completed result of the command.
         /// </summary>
         /// <returns>The command result object.</returns>
-        public virtual BaseCommandResult getLastResult()
+        public BaseCommandResult getLastResult()
         {
-            return null;
+            return this._currentResult;
+        }
+
+        /// <summary>
+        /// Ask the command if it can continue. For all but two commands, this method is enough.
+        /// </summary>
+        /// <returns>True if yes, false otherwise.</returns>
+        public virtual bool startSession()
+        {
+            return this._sessionCounter == 0;
         }
 
         /// <summary>
@@ -110,32 +136,32 @@ namespace kimandtodd.DG200CSharp.commands
         private void evaluateData()
         {
             // If we don't even have two bytes, we can't get started. 
-            if (this._buf.Length < 2)
+            if (this._buffers[this._sessionCounter].Length < 2)
             {
                 return;
             }
-
+            // START HERE. WE NEED TO RESET ON NEW RESULT DATA.
             if (!this._commandHeaderDataEvaluated)
             {
                 this._commandHeaderDataEvaluated = true;
 
                 byte[] header = new byte[2];
-                this._buf.Position = 0;
-                int count = this._buf.Read(header, 0, 2);
-                this._buf.Position = this._buf.Length;
+                this._buffers[this._sessionCounter].Position = 0;
+                int count = this._buffers[this._sessionCounter].Read(header, 0, 2);
+                this._buffers[this._sessionCounter].Position = this._buffers[this._sessionCounter].Length;
                 if (!this.isCommandHeader(header))
                 {
                     throw new CommandException("The connection attempt failed. Either the device is not a DG200 or it is a DG200 that is not turned on.");
                 }
             }
             // Once we get enough data in the buffer, evaluate the payload size. 
-            if (!this._sizeDataEvaluated && this._buf.Length > 3 )
+            if (!this._sizeDataEvaluated && this._buffers[this._sessionCounter].Length > 3)
             {
                 this._sizeDataEvaluated = true;
                 byte[] sizeArr = new byte[2];
-                this._buf.Position = 2;
-                this._buf.Read(sizeArr, 0, 2);
-                this._buf.Position = this._buf.Length;
+                this._buffers[this._sessionCounter].Position = 2;
+                this._buffers[this._sessionCounter].Read(sizeArr, 0, 2);
+                this._buffers[this._sessionCounter].Position = this._buffers[this._sessionCounter].Length;
                 this._expectedByteCount = this.calculateExpectedBytes(sizeArr);
                 this.overrideExpectedByteCount();
             }
@@ -156,10 +182,20 @@ namespace kimandtodd.DG200CSharp.commands
         /// <param name="bytes">The array of bytes to store.</param>
         public void addCommandResultData(byte[] bytes, Int32 byteCount)
         {
-            // Copy the incoming stream to our local store.
-            this._buf.Write(bytes, 0, byteCount);
+            this.writeToCurrentBuffer(bytes, byteCount);
             // Read the bytes to throw any errors and measure progress.
             this.evaluateData();
+        }
+
+        private void writeToCurrentBuffer(byte[] bytes, Int32 byteCount)
+        {
+            if (this._buffers.Count < (this._sessionCounter+1))
+            {
+                this._buffers.Add(new CommandBuffer());
+            }
+
+            // Copy the incoming stream to our local store.
+            this._buffers[this._sessionCounter].Write(bytes, 0, byteCount);
         }
 
         /// <summary>
@@ -180,17 +216,6 @@ namespace kimandtodd.DG200CSharp.commands
         }
 
         /// <summary>
-        /// One of the DG200 commands returns two complete payloads, one after the other.
-        /// This method allows that command to notify the serial processor to keep reading 
-        /// from the buffer after the first session completes. 
-        /// </summary>
-        /// <returns>One if no override is necessary. Otherwise returns the true session count.</returns>
-        public int getExpectedSessionCount()
-        {
-            return 1;
-        }
-
-        /// <summary>
         /// Asks the command it if has received enough data.
         /// </summary>
         /// <returns>True if keep going, false otherwise.</returns>
@@ -203,8 +228,24 @@ namespace kimandtodd.DG200CSharp.commands
             }
             else
             {
-                return this._buf.Length < this._expectedByteCount;
+                bool _continue = this._buffers[this._sessionCounter].Length < this._expectedByteCount;
+                if (!_continue)
+                {
+                    // Initialize the result and increment the session count.
+                    this.initializeResult(this._buffers[this._sessionCounter++]);
+                }
+                
+                return _continue;
             }
+        }
+
+        /// <summary>
+        /// Must be overidden. 
+        /// </summary>
+        /// <param name="c">The command buffer to store.</param>
+        protected virtual void initializeResult(CommandBuffer c)
+        {
+
         }
 
         /// <summary>

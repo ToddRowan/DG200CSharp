@@ -6,7 +6,6 @@ namespace kimandtodd.DG200CSharp.commands
     {
         byte[] getCommandData();
         void addCommandResultData(byte[] bytes, int byteCount);
-        int getExpectedSessionCount();
         BaseCommandResult getLastResult();
     }
 }

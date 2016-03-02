@@ -30,13 +30,10 @@ namespace kimandtodd.DG200CSharp.commands
             return buildCommandArray(GetDGIDCommand.commandArray);
         }
 
-        /// <summary>
-        /// Returns the result after executing a command.
-        /// </summary>
-        /// <returns>A GetDGIDCommandResult instance.</returns>
-        public override BaseCommandResult getLastResult()
+        protected override void initializeResult(CommandBuffer c)
         {
-            return new GetDGIDCommandResult(this._buf);
+            this._buffers.Add(c);
+            this._currentResult = new GetDGIDCommandResult(c);
         }
     }
 }

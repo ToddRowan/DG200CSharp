@@ -7,14 +7,16 @@ namespace kimandtodd.DG200CSharp.commands
     public class GetDGTrackHeadersCommand : BaseCommand
     {
         private static byte commandId = 0xBB;
-        private int startingTrackIndex = 0;
+        private int _startingTrackIndex;
+        private GetDGTrackHeadersCommandResult _result;
 
         /// <summary>
         /// Constructor. Calls the parent to initialize. 
         /// </summary>
         public GetDGTrackHeadersCommand() : base()
         {
-
+            //this._result = null;
+            this._startingTrackIndex = 0;
         }
 
         /// <summary>
@@ -23,6 +25,10 @@ namespace kimandtodd.DG200CSharp.commands
         /// <returns>A byte array with the command data.</returns>
         public override byte[] getCommandData()
         {
+            if (this._sessionCounter > 0 && this._currentResult != null)
+            {
+                this.setStartingTrackIndex(this._result.getNextTrackId());
+            }
             return buildCommandArray(assembleCommandData());
         }
 
@@ -33,7 +39,7 @@ namespace kimandtodd.DG200CSharp.commands
         /// <param name="newIndex">The track index to set.</param>
         public void setStartingTrackIndex(int newIndex)
         {
-            this.startingTrackIndex = newIndex;
+            this._startingTrackIndex = newIndex;
         }
 
         /// <summary>
@@ -42,7 +48,7 @@ namespace kimandtodd.DG200CSharp.commands
         /// <returns>An integer value of the starting index.</returns>
         public int getStartingTrackIndex()
         {
-            return this.startingTrackIndex;
+            return this._startingTrackIndex;
         }
 
         private byte[] assembleCommandData()
@@ -50,7 +56,7 @@ namespace kimandtodd.DG200CSharp.commands
             byte[] fullArray = new byte[3];
             fullArray[0] = GetDGTrackHeadersCommand.commandId;
 
-            byte[] convertedStartTrack = BitConverter.GetBytes(this.startingTrackIndex);
+            byte[] convertedStartTrack = BitConverter.GetBytes(this._startingTrackIndex);
 
             fullArray[2] = convertedStartTrack[0];
             fullArray[1] = convertedStartTrack[1];
@@ -58,13 +64,27 @@ namespace kimandtodd.DG200CSharp.commands
             return fullArray;
         }
 
-        /// <summary>
-        /// Returns the result after executing a command.
-        /// </summary>
-        /// <returns>A GetDGIDCommandResult instance.</returns>
-        public override BaseCommandResult getLastResult()
+        protected override void initializeResult(CommandBuffer c)
         {
-            return new GetDGTrackHeadersCommandResult(this._buf);
+            this._buffers.Add(c);
+            if (this._currentResult == null)
+            {
+                this._currentResult = this._result = new GetDGTrackHeadersCommandResult(c);
+            }
+            else
+            {
+                this._currentResult.addResultBuffer(c);
+            }  
+        }
+
+        /// <summary>
+        /// Ask the command if it can continue. For this command we have some extra math to consider, 
+        /// so we ask the result what we should do. It knows the current state.
+        /// </summary>
+        /// <returns>True if yes, false otherwise.</returns>
+        public override bool startSession()
+        {
+            return this._sessionCounter == 0 || this._result.startSession();
         }
     }
 }

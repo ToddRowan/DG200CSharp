@@ -25,20 +25,20 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// <param name="resultBuf">The buffer with the result of the command.</param>
         public GetDGIDCommandResult(CommandBuffer resultBuf) : base(resultBuf)
         {
-            this.init();
+            this.processBuffer();
         }
 
         /// <summary>
         /// Read the buffer and fill in our local variables.
         /// </summary>
-        private void init()
+        protected override void processBuffer()
         {
             this._retrievedId = new byte[GetDGIDCommandResult.ID_BYTE_LENGTH];
 
-            if (this._buf.Length > 12)
+            if (this.getCurrentBuffer().Length > 12)
             {
-                this._buf.Position = BaseCommandResult.PAYLOAD_START;
-                this._buf.Read(this._retrievedId, 0, GetDGIDCommandResult.ID_BYTE_LENGTH);
+                this.getCurrentBuffer().Position = BaseCommandResult.PAYLOAD_START;
+                this.getCurrentBuffer().Read(this._retrievedId, 0, GetDGIDCommandResult.ID_BYTE_LENGTH);
             }
         }
 

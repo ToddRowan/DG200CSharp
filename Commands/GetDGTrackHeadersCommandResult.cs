@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using kimandtodd.DG200CSharp.commands;
+using kimandtodd.DG200CSharp.commandresults.resultitems;
 
 namespace kimandtodd.DG200CSharp.commandresults
 {
@@ -10,6 +12,13 @@ namespace kimandtodd.DG200CSharp.commandresults
         private int _headerCount;
         // The next available track
         private int _nextTrackId;
+        // The array of headers
+        private List<DGTrackHeader> _trackHeaders;
+
+        private bool _startSession;
+
+        // A header block in the buffer is 12 bytes.
+        private static int HEADERSIZE = 12;
 
         /// <summary>
         /// Constructor
@@ -18,6 +27,10 @@ namespace kimandtodd.DG200CSharp.commandresults
         public GetDGTrackHeadersCommandResult(CommandBuffer resultBuf)
             : base(resultBuf)
         {
+            this._headerCount = 0;
+            this._trackHeaders = new List<DGTrackHeader>();
+            this._startSession = true;
+
             this.init();
         }
 
@@ -26,17 +39,40 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// </summary>
         private void init()
         {
-            this._buf.Position = BaseCommandResult.PAYLOAD_START;
-            byte[] tmpArr = new byte[2];
-
-            this._buf.Read(tmpArr, 0, tmpArr.Length);
-            _headerCount = bigEndianArrayToInt(tmpArr);
-
-            this._buf.Read(tmpArr, 0, tmpArr.Length);
-            _nextTrackId = bigEndianArrayToInt(tmpArr);
+            this.processBuffer();
         }
 
-        private int bigEndianArrayToInt(byte[] arr)
+        protected override void processBuffer()
+        {
+            this.getCurrentBuffer().Position = BaseCommandResult.PAYLOAD_START;
+            byte[] tmpArr = new byte[2];
+
+            this.getCurrentBuffer().Read(tmpArr, 0, tmpArr.Length);
+            int sessionHeaderCount = bigEndianArrayToInt16(tmpArr);
+
+            // If the session said no track headers remain, don't parse and set the start val to false.
+            if (sessionHeaderCount != 0)
+            {
+                this._headerCount += sessionHeaderCount;
+                this.getCurrentBuffer().Read(tmpArr, 0, tmpArr.Length);
+                _nextTrackId = bigEndianArrayToInt16(tmpArr);
+
+                for (int inx = 0; inx < _headerCount; inx++)
+                {
+                    byte[] headerBuf = new byte[GetDGTrackHeadersCommandResult.HEADERSIZE];
+
+                    this.getCurrentBuffer().Read(headerBuf, 0, headerBuf.Length);
+
+                    this._trackHeaders.Add(new DGTrackHeader(headerBuf));
+                }
+            }
+            else
+            {
+                this._startSession = false;
+            }
+        }
+
+        private int bigEndianArrayToInt16(byte[] arr)
         {
             byte[] tmpArr = new byte[2];
             tmpArr[0] = arr[1];
@@ -52,6 +88,15 @@ namespace kimandtodd.DG200CSharp.commandresults
         public int getNextTrackId()
         {
             return this._nextTrackId;
+        }
+
+        /// <summary>
+        /// Whether or not to order a second session.
+        /// </summary>
+        /// <returns>True if yes, false otherwise.</returns>
+        public override bool startSession()
+        {
+            return this._startSession;
         }
     }
 }

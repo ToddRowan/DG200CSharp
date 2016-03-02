@@ -36,10 +36,10 @@ namespace kimandtodd.DG200CSharp.commandresults
         {
             this._retrievedData = new byte[SetDGIDCommandResult.RETRIEVED_BYTE_LENGTH];
 
-            if (this._buf.Length > 9)
+            if (this.getCurrentBuffer().Length > 9)
             {
-                this._buf.Position = BaseCommandResult.PAYLOAD_START;
-                this._buf.Read(this._retrievedData, 0, SetDGIDCommandResult.RETRIEVED_BYTE_LENGTH);
+                this.getCurrentBuffer().Position = BaseCommandResult.PAYLOAD_START;
+                this.getCurrentBuffer().Read(this._retrievedData, 0, SetDGIDCommandResult.RETRIEVED_BYTE_LENGTH);
             }
         }
 

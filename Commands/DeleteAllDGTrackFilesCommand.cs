@@ -18,7 +18,7 @@ namespace kimandtodd.DG200CSharp.commands
 
         }
         
-        public new byte[] getCommandData()
+        public override byte[] getCommandData()
         {
             return buildCommandArray(assembleCommandData());
         }
