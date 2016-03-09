@@ -30,10 +30,9 @@ namespace kimandtodd.DG200CSharp.commands
             return buildCommandArray(GetDGIDCommand.commandArray);
         }
 
-        protected override void initializeResult(CommandBuffer c)
+        protected override void processResult()
         {
-            this._buffers.Add(c);
-            this._currentResult = new GetDGIDCommandResult(c);
+            this._currentResult = new GetDGIDCommandResult(this._buf);
         }
     }
 }

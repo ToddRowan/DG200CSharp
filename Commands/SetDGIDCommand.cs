@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using kimandtodd.DG200CSharp.commandresults;
+using kimandtodd.DG200CSharp.logging;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -70,12 +66,19 @@ namespace kimandtodd.DG200CSharp.commands
             Array.Resize(ref this.newId, 8);
         }
 
-        protected override void initializeResult(CommandBuffer c)
+        protected override void processResult()
         {
-            // Is there any reason why I want to store the buffer?
-            this._buffers.Add(c);
             // We should probably never do a conditional add here. 
-            this._currentResult = new SetDGIDCommandResult(c);                        
+            this._currentResult = new SetDGIDCommandResult(this._buf);
+        }
+
+        /// <summary>
+        /// This command requires a manual override on the data size value b/c it comes back wrong. 
+        /// </summary>
+        protected override void overrideExpectedByteCount()
+        {            
+            this._expectedByteCount += 4;
+            DG200FileLogger.Log("SetDGIDCommand overriding expected byte count: " + this._expectedByteCount, 3);
         }
     }
 }

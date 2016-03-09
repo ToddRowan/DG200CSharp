@@ -15,12 +15,12 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         private int _hour;
         private int _minute;
         private int _second;
-
-        // Headers have an index value that corresponds to a track index.
+        
         private int _fileIndex;
-
-        // A first block indicates a session start (any time a track is started without the previous one filling up)
+        
         private bool _isFirstBlock;
+
+        private bool _isInvalid;
 
         // The raw track byte stream.
         private byte[] _data;
@@ -36,7 +36,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             this.init();
         }
 
-        // Getters for the values.
+        // Getters for the date/time values.
         public int getYear()
         {
             return this._year;
@@ -67,14 +67,34 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             return this._second;
         }
 
+        /// <summary>
+        /// Headers have an index value that corresponds to the gps data file. 
+        /// </summary>
+        /// <returns>The file index for this header.</returns>
         public int getFileIndex()
         {
             return this._fileIndex;
         }
 
+        /// <summary>
+        /// A first block indicates a session start (any time the device initializes the gps connection).
+        /// First blocks occur when you turn the device on or regain signal (leave a building, for example).
+        /// </summary>
+        /// <returns>True if the first block, false otherwise.</returns>
         public bool getIsFirstBlock()
         {
             return this._isFirstBlock;
+        }
+
+        /// <summary>
+        /// If a header contains waypoints but was never able to make contact with the satellites
+        /// the data isn't really worth anything, but the device still creates a header and a file. 
+        /// So we mark that here to tell readers to ignore or discard this record.
+        /// </summary>
+        /// <returns>True if valid, false otherwise.</returns>
+        public bool getIsValid()
+        {
+            return this._isInvalid;
         }
 
         // Break up the header data.
@@ -112,6 +132,11 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             this._day = Int32.Parse(dateString.Substring(0, 2));
             this._month = Int32.Parse(dateString.Substring(2, 2));
             this._year = Int32.Parse(dateString.Substring(4, 2));
+            // Invalid headers have a date/time of midnight Jan 6, 1980 (the gps epoch start). 
+            if (this._year == 80)
+            {
+                this._isInvalid = true;
+            }
         }
 
         // Extract the file index value. 
@@ -130,7 +155,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
 
         private int bigEndianArrayToInt32(byte[] arr, int start)
         {
-            int size = 4, countUp = 0, countDown = 3;
+            int size = 4, countUp = 0, countDown = start + size - 1;
             byte[] tmpArr = new byte[size];
             while (countUp < size)
             {
@@ -138,6 +163,24 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             }
 
             return BitConverter.ToInt32(tmpArr, 0);
+        }
+
+        /// <summary>
+        /// Output a nice ISO date/time string. If the value ends with a star, it's the start of a block. 
+        /// </summary>
+        /// <returns>The UTC date/time in ISO format</returns>
+        public override string ToString()
+        {
+            string twoZeroFmt = "00";
+            string fourZeroFmt = "0000";
+            string sep = "-";
+            string colon = ":";
+
+            int year = this._year + (this._year == 80 ? 1900 : 2000);
+
+            return year.ToString(fourZeroFmt) + sep + this._month.ToString(twoZeroFmt) + this._day.ToString(twoZeroFmt) + "T" +
+                        this._hour.ToString(twoZeroFmt) +  colon + this._minute.ToString(twoZeroFmt) + colon + this._second.ToString(twoZeroFmt) + "Z"
+                        + (this._isFirstBlock?"*":"");
         }
     }
 }

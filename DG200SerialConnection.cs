@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Ports;
 using kimandtodd.DG200CSharp.commands;
+using kimandtodd.DG200CSharp.logging;
 
 namespace kimandtodd.DG200CSharp
 {
@@ -36,9 +37,11 @@ namespace kimandtodd.DG200CSharp
         /// <param name="portName">Where to find the DG200.</param>
         public DG200SerialConnection(string portName) 
         {
+            DG200FileLogger.Log("DG200SerialConnection constructor. Port: " + portName, 3);
             _portName = portName;
             _status = ConnectionStatus.UNKNOWN;
             this._outputter = null;
+            this._currentCommand = null;
         }
 
         /// <summary>
@@ -115,20 +118,41 @@ namespace kimandtodd.DG200CSharp
         /// <summary>
         /// Executes a command through the serial connection. 
         /// </summary>
-        /// <param name="cmd"></param>
-        public void Execute(BaseCommand cmd)
+        public void Execute()
         {
-            this._currentCommand = cmd;
-            this._currentCommand.initialize();
-            // Change this to while(SendMessage) or something simliar, to let the command dictate how many times to request data from the dg200
-            while (this._currentCommand.startSession())
+            if (this._currentCommand != null)
             {
-                this.SendMessage(this._currentCommand.getCommandData());
-                while (this.Read())
+                DG200FileLogger.Log("DG200SerialConnection Execute method sending message.", 3);
+                if (this.SendMessage(this._currentCommand.getCommandData()))
                 {
-                    // put a debug log statement here.
+                    do
+                    {
+                        // Not sure if I should declare this on every iteration, but I guess it's ok. 
+                        byte[] newReceivedData = new byte[128];
+                        // Get data from the COM port.
+                        Int32 BytesRead = this._prt.Read(newReceivedData, 0, newReceivedData.Length);
+                        DG200FileLogger.Log("DG200SerialConnection Execute method read this many bytes: " + BytesRead + " from com. Passing to command.", 3);
+                        // Put in the buffer. 
+                        this._currentCommand.addCommandResultData(newReceivedData, BytesRead);
+
+                    } while (this._currentCommand.continueReading());
                 }
             }
+            else
+            {
+                // throw?
+                DG200FileLogger.Log("DG200SerialConnection Execute method called without a command. Doing nothing instead.", 1);
+            }
+        }
+
+        /// <summary>
+        /// Used by the executing command to provide a reference to itself, so that the connection can feed it bytes. 
+        /// </summary>
+        /// <param name="cmd">The command that will make the request and receive the data.</param>
+        public void setCommand (BaseCommand cmd)
+        {
+            this._currentCommand = cmd;
+            //this._currentCommand.initialize();
         }
 
         /// <summary>

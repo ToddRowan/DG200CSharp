@@ -2,23 +2,27 @@
 using System.Collections.Generic;
 
 using kimandtodd.DG200CSharp.commands;
+using kimandtodd.DG200CSharp.logging;
 
 namespace kimandtodd.DG200CSharp.commandresults
 {
     public abstract class BaseCommandResult : ICommandResult
     {
         private bool _successState;
-        private List<CommandBuffer> _buffers;
+        protected bool _additionalSession;
+        protected List<CommandBuffer> _buffers;
 
         protected static int COMMAND_LOCATION = 4;
         protected static int PAYLOAD_START = 5;
 
         protected BaseCommandResult(CommandBuffer resultBuf)
         {
+            DG200FileLogger.Log("BaseCommandResult constructor.", 3);
             this._buffers = new List<CommandBuffer>();
 
             this.addResultBuffer(resultBuf);
             this._successState = false;
+            this._additionalSession = false;
         }
 
         public bool getSuccess()
@@ -31,9 +35,9 @@ namespace kimandtodd.DG200CSharp.commandresults
             return "";
         }
 
-        public virtual bool startSession()
+        public virtual bool requestAdditionalSession()
         {
-            return false;
+            return this._additionalSession;
         }
 
         public virtual void addResultBuffer(CommandBuffer c)
@@ -51,9 +55,14 @@ namespace kimandtodd.DG200CSharp.commandresults
 
         }
 
-        protected CommandBuffer getCurrentBuffer()
+        protected virtual CommandBuffer getCurrentBuffer()
         {
             return this._buffers[this._buffers.Count - 1];
+        }
+
+        protected int getBufferCount()
+        {
+            return this._buffers.Count;
         }
     }
 }

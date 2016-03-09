@@ -1,6 +1,7 @@
 ﻿using System;
 
 using kimandtodd.DG200CSharp.commandresults;
+using kimandtodd.DG200CSharp.logging;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -15,7 +16,7 @@ namespace kimandtodd.DG200CSharp.commands
         /// </summary>
         public GetDGTrackHeadersCommand() : base()
         {
-            //this._result = null;
+            DG200FileLogger.Log("GetDGTrackHeadersCommand constructor.", 3);
             this._startingTrackIndex = 0;
         }
 
@@ -25,7 +26,7 @@ namespace kimandtodd.DG200CSharp.commands
         /// <returns>A byte array with the command data.</returns>
         public override byte[] getCommandData()
         {
-            if (this._sessionCounter > 0 && this._currentResult != null)
+            if (this._currentResult != null)
             {
                 this.setStartingTrackIndex(this._result.getNextTrackId());
             }
@@ -64,16 +65,18 @@ namespace kimandtodd.DG200CSharp.commands
             return fullArray;
         }
 
-        protected override void initializeResult(CommandBuffer c)
+        protected override void processResult()
         {
-            this._buffers.Add(c);
             if (this._currentResult == null)
             {
-                this._currentResult = this._result = new GetDGTrackHeadersCommandResult(c);
+                DG200FileLogger.Log("GetDGTrackHeadersCommand processing first result.", 3);
+                this._currentResult = this._result = new GetDGTrackHeadersCommandResult(this._buf);
             }
             else
             {
-                this._currentResult.addResultBuffer(c);
+                DG200FileLogger.Log("GetDGTrackHeadersCommand processing subsequent result.", 3);
+                this._currentResult.addResultBuffer(this._buf);
+                this._requestAdditionalSession = this._currentResult.requestAdditionalSession();
             }  
         }
 
@@ -84,7 +87,7 @@ namespace kimandtodd.DG200CSharp.commands
         /// <returns>True if yes, false otherwise.</returns>
         public override bool startSession()
         {
-            return this._sessionCounter == 0 || this._result.startSession();
+            return this._result.requestAdditionalSession();
         }
     }
 }
