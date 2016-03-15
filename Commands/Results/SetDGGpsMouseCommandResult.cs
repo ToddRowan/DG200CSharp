@@ -12,8 +12,7 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// Constructor
         /// </summary>
         /// <param name="resultBuf">The buffer with the result of the command.</param>
-        public SetDGGpsMouseCommandResult(CommandBuffer resultBuf)
-            : base(resultBuf)
+        public SetDGGpsMouseCommandResult() : base()
         {
 
         }

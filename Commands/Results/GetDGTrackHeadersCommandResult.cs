@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 
 using kimandtodd.DG200CSharp.commands;
+using kimandtodd.DG200CSharp.commandresults;
 using kimandtodd.DG200CSharp.commandresults.resultitems;
 using kimandtodd.DG200CSharp.logging;
 
 namespace kimandtodd.DG200CSharp.commandresults
 {
-    public class GetDGTrackHeadersCommandResult : BaseCommandResult
+    public class GetDGTrackHeadersCommandResult : BaseCommandResult, ITrackHeaderResult
     {
         // The number of headers the device reports.
         private int _headerCount;
@@ -15,6 +16,8 @@ namespace kimandtodd.DG200CSharp.commandresults
         private int _nextTrackId;
         // The array of headers
         private List<DGTrackHeader> _trackHeaders;
+        // Whether or not we should run another session
+        private bool _additionalSession;
 
         // A header block in the buffer is 12 bytes.
         private static int HEADERSIZE = 12;
@@ -23,24 +26,17 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// Constructor
         /// </summary>
         /// <param name="resultBuf">The buffer with the result of the command.</param>
-        public GetDGTrackHeadersCommandResult(CommandBuffer resultBuf)
-            : base(resultBuf)
+        public GetDGTrackHeadersCommandResult() : base()
         {
             DG200FileLogger.Log("GetDGTrackHeadersCommandResult constructor.", 3);
             this._headerCount = 0;
+            this._additionalSession = true; // We always do at least two. 
             this._trackHeaders = new List<DGTrackHeader>();
-
-            this.init();
         }
 
         /// <summary>
-        /// Read the buffer and fill in our local variables.
+        /// Process our local buffer.
         /// </summary>
-        private void init()
-        {
-            this.processBuffer();
-        }
-
         protected override void processBuffer()
         {
             this.getCurrentBuffer().Position = BaseCommandResult.PAYLOAD_START;
@@ -96,7 +92,7 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// Get the track ID to start the next session. Used by the command to initiate the session.
         /// </summary>
         /// <returns>The next trackID to retrieve. First track number is zero.</returns>
-        public int getNextTrackId()
+        public int getNextTrackHeaderId()
         {
             return this._nextTrackId;
         }
@@ -114,6 +110,11 @@ namespace kimandtodd.DG200CSharp.commandresults
             }
 
             return headers;
+        }
+
+        public bool requestAdditionalSession()
+        {
+            return this._additionalSession;
         }
     }
 }

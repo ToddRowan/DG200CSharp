@@ -2,6 +2,7 @@
 
 using kimandtodd.DG200CSharp.commandresults;
 using kimandtodd.DG200CSharp.logging;
+using kimandtodd.DG200CSharp.sessions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -9,7 +10,7 @@ namespace kimandtodd.DG200CSharp.commands
     {
         private static byte commandId = 0xBB;
         private int _startingTrackIndex;
-        private GetDGTrackHeadersCommandResult _result;
+        private GetDGTrackHeadersCommandResult _locResult;
 
         /// <summary>
         /// Constructor. Calls the parent to initialize. 
@@ -18,6 +19,11 @@ namespace kimandtodd.DG200CSharp.commands
         {
             DG200FileLogger.Log("GetDGTrackHeadersCommand constructor.", 3);
             this._startingTrackIndex = 0;
+
+            this._locResult = new GetDGTrackHeadersCommandResult();
+            this._session = new GetDGTrackHeadersSession();
+            this._session.setResult(this._locResult);
+            this._currentResult = this._locResult;
         }
 
         /// <summary>
@@ -26,10 +32,6 @@ namespace kimandtodd.DG200CSharp.commands
         /// <returns>A byte array with the command data.</returns>
         public override byte[] getCommandData()
         {
-            if (this._currentResult != null)
-            {
-                this.setStartingTrackIndex(this._result.getNextTrackId());
-            }
             return buildCommandArray(assembleCommandData());
         }
 
@@ -65,29 +67,16 @@ namespace kimandtodd.DG200CSharp.commands
             return fullArray;
         }
 
-        protected override void processResult()
-        {
-            if (this._currentResult == null)
-            {
-                DG200FileLogger.Log("GetDGTrackHeadersCommand processing first result.", 3);
-                this._currentResult = this._result = new GetDGTrackHeadersCommandResult(this._buf);
-            }
-            else
-            {
-                DG200FileLogger.Log("GetDGTrackHeadersCommand processing subsequent result.", 3);
-                this._currentResult.addResultBuffer(this._buf);
-                this._requestAdditionalSession = this._currentResult.requestAdditionalSession();
-            }  
-        }
-
         /// <summary>
-        /// Ask the command if it can continue. For this command we have some extra math to consider, 
-        /// so we ask the result what we should do. It knows the current state.
+        /// Asks the session if we should make another request to the DG200.
         /// </summary>
-        /// <returns>True if yes, false otherwise.</returns>
-        public override bool startSession()
+        /// <returns>True if keep going, false otherwise.</returns>
+        public override bool doAnotherSession()
         {
-            return this._result.requestAdditionalSession();
+            // Here we ask our session what we should do.
+            // If the answer is yes, we need to set the input param accordingly.
+            this.setStartingTrackIndex(this._locResult.getNextTrackHeaderId());
+            return this._session.callAgain();
         }
     }
 }

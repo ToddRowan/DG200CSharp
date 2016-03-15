@@ -9,14 +9,12 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="resultBuf">The buffer with the result of the command.</param>
-        public GetDGConfigurationCommandResult(CommandBuffer resultBuf)
-            : base(resultBuf)
+        public GetDGConfigurationCommandResult() : base()
         {
-            this.init();
+
         }
 
-        private void init()
+        protected override void processBuffer()
         {
 
         }

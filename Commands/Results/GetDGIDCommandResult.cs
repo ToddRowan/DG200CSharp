@@ -22,10 +22,8 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="resultBuf">The buffer with the result of the command.</param>
-        public GetDGIDCommandResult(CommandBuffer resultBuf) : base(resultBuf)
+        public GetDGIDCommandResult() : base()
         {
-            this.processBuffer();
         }
 
         /// <summary>
@@ -35,11 +33,8 @@ namespace kimandtodd.DG200CSharp.commandresults
         {
             this._retrievedId = new byte[GetDGIDCommandResult.ID_BYTE_LENGTH];
 
-            if (this.getCurrentBuffer().Length > 12)
-            {
-                this.getCurrentBuffer().Position = BaseCommandResult.PAYLOAD_START;
-                this.getCurrentBuffer().Read(this._retrievedId, 0, GetDGIDCommandResult.ID_BYTE_LENGTH);
-            }
+            this.getCurrentBuffer().Position = BaseCommandResult.PAYLOAD_START;
+            this.getCurrentBuffer().Read(this._retrievedId, 0, GetDGIDCommandResult.ID_BYTE_LENGTH);
         }
 
         /// <summary>

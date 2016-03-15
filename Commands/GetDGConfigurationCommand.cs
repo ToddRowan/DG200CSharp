@@ -30,14 +30,5 @@ namespace kimandtodd.DG200CSharp.commands
 
             return fullArray;
         }
-
-        /// <summary>
-        /// Returns the result after executing a command.
-        /// </summary>
-        /// <returns>A GetDGIDCommandResult instance.</returns>
-        protected override void processResult()
-        {
-            this._currentResult = new GetDGConfigurationCommandResult(this._buf);            
-        }
     }
 }

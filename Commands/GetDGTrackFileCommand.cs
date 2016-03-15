@@ -2,6 +2,7 @@
 
 using kimandtodd.DG200CSharp.commandresults;
 using kimandtodd.DG200CSharp.logging;
+using kimandtodd.DG200CSharp.sessions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -9,8 +10,6 @@ namespace kimandtodd.DG200CSharp.commands
     {
         private static byte commandId = 0xB5;
         private int _trackIndex;
-        private bool _overrideContinue;
-        private GetDGTrackFileCommandResult _result;
 
         /// <summary>
         /// Constructor. Calls the parent to initialize. 
@@ -18,7 +17,10 @@ namespace kimandtodd.DG200CSharp.commands
         public GetDGTrackFileCommand() : base()
         {
             this._trackIndex = 0;
-            this._overrideContinue = false;
+
+            this._currentResult = new GetDGTrackFileCommandResult();
+            this._session = new GetDGTrackFileSession();
+            this._session.setResult(this._currentResult);
         }
 
         public override byte[] getCommandData()
@@ -47,63 +49,6 @@ namespace kimandtodd.DG200CSharp.commands
             fullArray[1] = convertedTrack[1];
 
             return fullArray;
-        }
-
-        /// <summary>
-        /// Ask the command if it can continue. For this command we have some extra math to consider, 
-        /// so we ask the result what we should do. It knows the current state.
-        /// </summary>
-        /// <returns>True if yes, false otherwise.</returns>
-        public override bool startSession()
-        {
-            return this._result.requestAdditionalSession();
-        }
-
-        protected override void processResult()
-        {
-            if (this._currentResult == null)
-            {
-                this._currentResult = this._result = new GetDGTrackFileCommandResult(this._buf);
-            }
-            else
-            {
-                this._currentResult.addResultBuffer(this._buf);
-                // TODO: Why do I set this? I don't think I actually use it. 
-                this._requestAdditionalSession = this._currentResult.requestAdditionalSession();
-            }
-        }
-
-        public override bool continueReading()
-        {
-            if (this._currentResult == null)
-            {
-                return base.continueReading();
-            }
-            else
-            {
-                return this._overrideContinue;
-            }
-            
-        }
-
-        protected override void evaluateData()
-        {
-            // If we still don't have the first result, use the parent command.
-            if (this._currentResult == null)
-            {
-                base.evaluateData();
-            }
-            else
-            {
-                // This payload doesn't have the expected headers. So it 
-                this.overrideExpectedByteCount();
-            }
-        }
-
-        protected override void overrideExpectedByteCount()
-        {
-            DG200FileLogger.Log("GetTrackFileCommand overriding expected payload size on second session.", 3);
-            this._expectedByteCount = 1024;
         }
     }
 }

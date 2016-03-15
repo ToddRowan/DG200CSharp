@@ -1,4 +1,5 @@
 ﻿using kimandtodd.DG200CSharp.commandresults;
+using kimandtodd.DG200CSharp.sessions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -12,7 +13,9 @@ namespace kimandtodd.DG200CSharp.commands
         /// </summary>
         public SetDGGpsMouseCommand() : base()
         {
-
+            this._currentResult = new SetDGGpsMouseCommandResult();
+            this._session = new BaseSession();
+            this._session.setResult(this._currentResult);
         }
 
         public override byte[] getCommandData()
@@ -45,15 +48,6 @@ namespace kimandtodd.DG200CSharp.commands
             }
 
             return fullArray;
-        }
-
-        /// <summary>
-        /// Returns the result after executing a command.
-        /// </summary>
-        /// <returns>A GetDGIDCommandResult instance.</returns>
-        protected override void processResult()
-        {
-            this._currentResult = new SetDGGpsMouseCommandResult(this._buf);
         }
     }
 }

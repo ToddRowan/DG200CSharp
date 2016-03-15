@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using kimandtodd.DG200CSharp.commandresults;
+﻿using kimandtodd.DG200CSharp.commandresults;
+using kimandtodd.DG200CSharp.sessions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -18,7 +12,9 @@ namespace kimandtodd.DG200CSharp.commands
         /// </summary>
         public GetDGIDCommand() : base()
         {
-
+            this._currentResult = new GetDGIDCommandResult();
+            this._session = new BaseSession();
+            this._session.setResult(this._currentResult);
         }
 
         /// <summary>
@@ -28,11 +24,6 @@ namespace kimandtodd.DG200CSharp.commands
         public override byte[] getCommandData()
         {
             return buildCommandArray(GetDGIDCommand.commandArray);
-        }
-
-        protected override void processResult()
-        {
-            this._currentResult = new GetDGIDCommandResult(this._buf);
         }
     }
 }

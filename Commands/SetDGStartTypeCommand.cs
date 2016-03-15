@@ -1,10 +1,11 @@
 ﻿using System;
 
 using kimandtodd.DG200CSharp.commandresults;
+using kimandtodd.DG200CSharp.sessions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
-    public class SetDG200StartTypeCommand : BaseCommand
+    public class SetDGStartTypeCommand : BaseCommand
     {
         private static byte commandId = 0x80;
 
@@ -18,9 +19,12 @@ namespace kimandtodd.DG200CSharp.commands
         /// <summary>
         /// Constructor. Calls the parent to initialize. 
         /// </summary>
-        public SetDG200StartTypeCommand() : base()
+        public SetDGStartTypeCommand() : base()
         {
-            this._currentStartType = SetDG200StartTypeCommand.HOT_START;
+            this._currentStartType = SetDGStartTypeCommand.HOT_START;
+            this._currentResult = new SetDGStartTypeCommandResult();
+            this._session = new BaseSession();
+            this._session.setResult(this._currentResult);
         }
 
         public override byte[] getCommandData()
@@ -41,7 +45,7 @@ namespace kimandtodd.DG200CSharp.commands
         private byte[] assembleCommandData()
         {
             byte[] fullArray = new byte[25];
-            fullArray[0] = SetDG200StartTypeCommand.commandId;
+            fullArray[0] = SetDGStartTypeCommand.commandId;
 
             for (int x = 1; x < 23; x++)
             {

@@ -2,14 +2,13 @@
 
 namespace kimandtodd.DG200CSharp.commandresults
 {
-    public class SetDG200StartTypeCommandResult : BaseCommandResult
+    public class SetDGStartTypeCommandResult : BaseCommandResult
     {
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="resultBuf">The buffer with the result of the command.</param>
-        public SetDG200StartTypeCommandResult(CommandBuffer resultBuf)
-            : base(resultBuf)
+        public SetDGStartTypeCommandResult() : base()
         {
 
         }

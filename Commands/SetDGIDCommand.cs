@@ -2,6 +2,7 @@
 
 using kimandtodd.DG200CSharp.commandresults;
 using kimandtodd.DG200CSharp.logging;
+using kimandtodd.DG200CSharp.sessions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -15,7 +16,9 @@ namespace kimandtodd.DG200CSharp.commands
         /// </summary>
         public SetDGIDCommand() : base()
         {
-
+            this._currentResult = new SetDGIDCommandResult();
+            this._session = new SetDGIDSession();
+            this._session.setResult(this._currentResult);
         }
 
         public override byte[] getCommandData()
@@ -64,21 +67,6 @@ namespace kimandtodd.DG200CSharp.commands
 
             // if array is too long, truncate
             Array.Resize(ref this.newId, 8);
-        }
-
-        protected override void processResult()
-        {
-            // We should probably never do a conditional add here. 
-            this._currentResult = new SetDGIDCommandResult(this._buf);
-        }
-
-        /// <summary>
-        /// This command requires a manual override on the data size value b/c it comes back wrong. 
-        /// </summary>
-        protected override void overrideExpectedByteCount()
-        {            
-            this._expectedByteCount += 4;
-            DG200FileLogger.Log("SetDGIDCommand overriding expected byte count: " + this._expectedByteCount, 3);
-        }
+        }       
     }
 }

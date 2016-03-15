@@ -152,7 +152,6 @@ namespace kimandtodd.DG200CSharp
         public void setCommand (BaseCommand cmd)
         {
             this._currentCommand = cmd;
-            //this._currentCommand.initialize();
         }
 
         /// <summary>
@@ -184,7 +183,7 @@ namespace kimandtodd.DG200CSharp
         }
 
         /// <summary>
-        /// Reads serial data out of the system buffer. 
+        /// Reads serial data out of the system buffer. DELETE ME!!!!
         /// </summary>
         /// <returns>true if more data is expected, false if there's nothing left to process.</returns>
         public Boolean Read() 
