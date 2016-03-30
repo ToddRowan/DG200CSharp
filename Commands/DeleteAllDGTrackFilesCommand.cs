@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using kimandtodd.DG200CSharp.commandresults;
+using kimandtodd.DG200CSharp.sessions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -15,7 +12,9 @@ namespace kimandtodd.DG200CSharp.commands
         /// </summary>
         public DeleteAllDGTrackFilesCommand() : base()
         {
-
+            this._currentResult = new DeleteAllTrackFilesCommandResult();
+            this._session = new BaseSession();
+            this._session.setResult(this._currentResult);
         }
         
         public override byte[] getCommandData()

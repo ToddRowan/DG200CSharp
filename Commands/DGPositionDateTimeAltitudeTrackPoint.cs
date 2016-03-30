@@ -14,7 +14,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         {
             // altitude is bytes 20-23
             ArraySegment<byte> altSeg = new ArraySegment<byte>(this._rawData, 20, 4);
-            string a = this.intToSixDigitString(this.bigEndianArrayToInt32(altSeg));
+            string a = this.intToSixDigitString(DG200Utils.bigEndianArrayToInt32(altSeg));
 
             this._altitude = UInt32.Parse(a);
         }

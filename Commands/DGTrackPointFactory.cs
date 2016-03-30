@@ -7,6 +7,10 @@ using kimandtodd.DG200CSharp.logging;
 
 namespace kimandtodd.DG200CSharp.commandresults.resultitems
 {
+    /// <summary>
+    /// Reads raw binary data from the DG200 and converts it into trackpoint instances 
+    /// that can be saved and processed as needed.
+    /// </summary>
     public class DGTrackPointFactory
     {
         private UInt16 _formatType;
@@ -18,6 +22,10 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
 
         private getTrackPointMethod getTrackPoint;
 
+        /// <summary>
+        /// Constructor. Initializes the internal settings to produce the correct track type for all records. 
+        /// </summary>
+        /// <param name="buffer">Buffer of data to process.</param>
         public DGTrackPointFactory(CommandBuffer buffer)
         {
             this._buf = buffer;
@@ -29,6 +37,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
 
             this._firstTrack = new DGFirstTrackPoint(firstTrackArr);
 
+            // The byte size of the remaining records is based on what's found in the first one. 
             this._formatType = this._firstTrack.getTrackFormat();
             this._expectedBytes = this._formatType == BaseDGTrackPoint.FORMAT_POSITION_DATE_SPEED_ALTITUDE ? 32 : 20;
 
@@ -43,7 +52,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
                     break;
 
                 default:
-                    this.getTrackPoint = getAltitudeTrackPoint;
+                    this.getTrackPoint = this.getAltitudeTrackPoint;
                     break;
             }
         }
@@ -63,11 +72,19 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             return new DGPositionDateTimeAltitudeTrackPoint(bytes);
         }
 
+        /// <summary>
+        /// Ask the factory about the format type for all items in this track.
+        /// </summary>
+        /// <returns>The format type. 0 for position, 1 to add date/time &amp; speed, 3 adds altitude. </returns>
         public UInt16 getFormatType()
         {
             return this._formatType;
         }
 
+        /// <summary>
+        /// Generates the track points from the internal buffer. 
+        /// </summary>
+        /// <returns>Yields track points that are stored.</returns>
         public IEnumerable<IDGTrackPoint> getTrackPoints()
         {
             // Send back the first one.

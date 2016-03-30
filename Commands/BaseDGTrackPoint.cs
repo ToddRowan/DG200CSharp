@@ -35,11 +35,13 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             this.processDateTime();
         }
 
+        // Process latitude data. Since this can never be larger than 90,
+        // the DG200 includes the waypoint data by adding 10000000 (if necessary)
         private void readLatitude()
         {
             ArraySegment<byte> latSeg = new ArraySegment<byte>(this._rawData, 0, 4);
-            
-            int raw = this.bigEndianArrayToInt32(latSeg);
+
+            int raw = DG200Utils.bigEndianArrayToInt32(latSeg);
             raw = this.processWaypoint(raw);
 
             string s = this.intToNineDigitString(raw);
@@ -50,7 +52,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         private void readLongitude()
         {
             ArraySegment<byte> lonSeg = new ArraySegment<byte>(this._rawData, 4, 4);
-            string s = this.intToNineDigitString(this.bigEndianArrayToInt32(lonSeg));
+            string s = this.intToNineDigitString(DG200Utils.bigEndianArrayToInt32(lonSeg));
 
             this._long = this.makeCoordinate(s);
         }
@@ -64,7 +66,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
                 subPos++;
             }
 
-            // get last 6 chars for coordinates
+            // get last 6 chars for min/sec, first three or four for the degrees
             string minSec = coordinate.Substring(subPos);
             string deg = coordinate.Substring(0, subPos);
 
@@ -173,30 +175,6 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             // Make sure we get a leading zero for first byte values less than 10
             string fmt = "000000";
             return src.ToString(fmt);
-        }
-
-        //protected int bigEndianArrayToInt32(byte[] arr, int start)
-        //{
-        //    int size = 4, countUp = 0, countDown = start + size - 1;
-        //    byte[] tmpArr = new byte[size];
-        //    while (countUp < size)
-        //    {
-        //        tmpArr[countUp++] = arr[countDown--];
-        //    }
-
-        //    return BitConverter.ToInt32(tmpArr, 0);
-        //}
-
-        protected int bigEndianArrayToInt32(ArraySegment<byte> arr)
-        {
-            int size = 4, countUp = 0, countDown = arr.Offset + size - 1;
-            byte[] tmpArr = new byte[size];
-            while (countUp < size)
-            {
-                tmpArr[countUp++] = arr.Array[countDown--];
-            }
-
-            return BitConverter.ToInt32(tmpArr, 0);
-        }
+        }        
     }
 }

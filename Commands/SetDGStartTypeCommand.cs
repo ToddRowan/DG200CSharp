@@ -21,7 +21,7 @@ namespace kimandtodd.DG200CSharp.commands
         /// </summary>
         public SetDGStartTypeCommand() : base()
         {
-            this._currentStartType = SetDGStartTypeCommand.HOT_START;
+            this._currentStartType = SetDGStartTypeCommand.COLD_START;
             this._currentResult = new SetDGStartTypeCommandResult();
             this._session = new BaseSession();
             this._session.setResult(this._currentResult);

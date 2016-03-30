@@ -5,19 +5,18 @@ namespace kimandtodd.DG200CSharp.sessions
 {
     class GetDGTrackFileSession : BaseSession
     {
-        private bool _secondSessionStart;
         private bool _movedSessionPointer;
 
         private static int FIRST_PAYLOAD_END = 1029;
         private static int SECOND_SESSION_PAYLOAD_START = 1038;
         private static int SPACE_BETWEEN_PAYLOADS = GetDGTrackFileSession.SECOND_SESSION_PAYLOAD_START - GetDGTrackFileSession.FIRST_PAYLOAD_END;
+        private static int ACTUAL_PAYLOAD_BYTE_COUNT = 2057;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public GetDGTrackFileSession() : base()
         {
-            this._secondSessionStart = false;
             this._movedSessionPointer = false;
         }
         
@@ -31,7 +30,8 @@ namespace kimandtodd.DG200CSharp.sessions
             int bytesCopiedFromFirstSession = 0,
                 newInputOffset = 0;
             
-            // First, do we have enough bytes to start copying the second payload?
+            // First, do we have enough bytes to start copying the second payload? 
+            // We only want to do this once. 
             if (!this._movedSessionPointer && this.getCurrentBuffer().Length + byteCount >= GetDGTrackFileSession.SECOND_SESSION_PAYLOAD_START)
             {
                 DG200FileLogger.Log("GetDGTrackFileSession evaluating data merge criteria.", 2);
@@ -74,13 +74,12 @@ namespace kimandtodd.DG200CSharp.sessions
         }
 
         /// <summary>
-        /// Allows descendant classes to override the expected byte count, 
-        /// as some commands lie about their payload sizes. 
+        /// We override the byte count since the DG200 sends two sessions in response to one command request.
         /// </summary>
         protected override void overrideExpectedByteCount()
         {
             // The track file command sends two sessions at once.  
-            this._expectedByteCount = 2057;
+            this._expectedByteCount = GetDGTrackFileSession.ACTUAL_PAYLOAD_BYTE_COUNT;
             DG200FileLogger.Log("GetDGTrackFileSession overriding expected byte count: " + this._expectedByteCount, 2);
         }
     }

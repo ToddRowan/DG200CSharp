@@ -15,10 +15,10 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         {
             // time is bytes 8-11, date is bytes 12-15.
             ArraySegment<byte> timeSeg = new ArraySegment<byte>(this._rawData, 8, 4);
-            string t = this.intToSixDigitString(this.bigEndianArrayToInt32(timeSeg));
+            string t = this.intToSixDigitString(DG200Utils.bigEndianArrayToInt32(timeSeg));
 
             ArraySegment<byte> dateSeg = new ArraySegment<byte>(this._rawData, 12, 4);
-            string d = this.intToSixDigitString(this.bigEndianArrayToInt32(dateSeg));
+            string d = this.intToSixDigitString(DG200Utils.bigEndianArrayToInt32(dateSeg));
 
             try
             {
@@ -27,7 +27,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             }
             catch(Exception e)
             {
-                DG200FileLogger.Log("DGPositionDateTimeTrackPoint: Unable to process date value (" + t + "). Setting to GPS epoch.", 3);
+                DG200FileLogger.Log("DGPositionDateTimeTrackPoint: Unable to process date value (" + t + "). Setting to GPS epoch.", 2);
                 base.processDateTime();
             }
         }
@@ -51,7 +51,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         {
             // speed is bytes 16-19
             ArraySegment<byte> speedSeg = new ArraySegment<byte>(this._rawData, 16, 4);
-            string s = this.intToSixDigitString(this.bigEndianArrayToInt32(speedSeg));
+            string s = this.intToSixDigitString(DG200Utils.bigEndianArrayToInt32(speedSeg));
             this._speed = UInt32.Parse(s);
         }
     }

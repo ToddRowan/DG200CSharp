@@ -1,4 +1,5 @@
 ﻿using kimandtodd.DG200CSharp.commandresults;
+using kimandtodd.DG200CSharp.sessions;
 
 namespace kimandtodd.DG200CSharp.commands
 {
@@ -11,7 +12,9 @@ namespace kimandtodd.DG200CSharp.commands
         /// </summary>
         public GetDGConfigurationCommand() : base()
         {
-
+            this._currentResult = new GetDGConfigurationCommandResult();
+            this._session = new BaseSession();
+            this._session.setResult(this._currentResult);
         }
 
         /// <summary>

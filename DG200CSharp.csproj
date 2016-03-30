@@ -41,28 +41,52 @@
   <ItemGroup>
     <Compile Include="CommandBuffer.cs" />
     <Compile Include="CommandException.cs" />
-    <Compile Include="Commands\BaseCommandData.cs" />
-    <Compile Include="Commands\BaseCommandResult.cs" />
+    <Compile Include="Commands\BaseCommand.cs" />
+    <Compile Include="Commands\BaseDGTrackPoint.cs" />
     <Compile Include="Commands\DeleteAllDGTrackFilesCommand.cs" />
+    <Compile Include="Commands\DG200Configuration.cs" />
+    <Compile Include="Commands\DGFirstTrackPoint.cs" />
+    <Compile Include="Commands\DGPositionDateTimeAltitudeTrackPoint.cs" />
+    <Compile Include="Commands\DGPositionDateTimeTrackPoint.cs" />
+    <Compile Include="Commands\DGPositionTrackPoint.cs" />
+    <Compile Include="Commands\DGTrackFile.cs" />
     <Compile Include="Commands\DGTrackHeader.cs" />
+    <Compile Include="Commands\DGTrackPointFactory.cs" />
     <Compile Include="Commands\GetDGConfigurationCommand.cs" />
-    <Compile Include="Commands\GetDGConfigurationCommandResult.cs" />
-    <Compile Include="Commands\GetDGIDCommandResult.cs" />
     <Compile Include="Commands\GetDGTrackFileCommand.cs" />
     <Compile Include="Commands\GetDGTrackHeadersCommand.cs" />
-    <Compile Include="Commands\GetDGTrackHeadersCommandResult.cs" />
     <Compile Include="Commands\ICommandData.cs" />
-    <Compile Include="Commands\ICommandResult.cs" />
+    <Compile Include="Commands\IDGTrackPoint.cs" />
+    <Compile Include="Commands\Results\BaseCommandResult.cs" />
+    <Compile Include="Commands\Results\DeleteAllTrackFilesCommandResult.cs" />
+    <Compile Include="Commands\Results\GetDGConfigurationCommandResult.cs" />
+    <Compile Include="Commands\Results\GetDGIDCommandResult.cs" />
+    <Compile Include="Commands\Results\GetDGStartTypeCommandResult.cs" />
+    <Compile Include="Commands\Results\GetDGTrackFileCommandResult.cs" />
+    <Compile Include="Commands\Results\GetDGTrackHeadersCommandResult.cs" />
+    <Compile Include="Commands\Results\ICommandResult.cs" />
+    <Compile Include="Commands\Results\ITrackHeaderResult.cs" />
+    <Compile Include="Commands\Results\SetDGConfigurationCommandResult.cs" />
+    <Compile Include="Commands\Results\SetDGGpsMouseCommandResult.cs" />
+    <Compile Include="Commands\Results\SetDGIDCommandResult.cs" />
+    <Compile Include="Commands\SetDGConfigurationCommand.cs" />
     <Compile Include="Commands\SetDGGpsMouseCommand.cs" />
-    <Compile Include="Commands\SetDGGpsMouseCommandResult.cs" />
     <Compile Include="Commands\SetDGIDCommand.cs" />
-    <Compile Include="Commands\SetDGIDCommandResult.cs" />
+    <Compile Include="Commands\SetDGStartTypeCommand.cs" />
+    <Compile Include="DG200Utils.cs" />
     <Compile Include="IDataOutput.cs" />
     <Compile Include="DG200CheckSumCalculator.cs" />
     <Compile Include="DG200SerialConnection.cs" />
     <Compile Include="Commands\GetDGIDCommand.cs" />
+    <Compile Include="Logging\DG200FileLogger.cs" />
+    <Compile Include="Logging\DG200LogBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sessions\BaseSession.cs" />
+    <Compile Include="Sessions\GetDGTrackFileSession.cs" />
+    <Compile Include="Sessions\GetDGTrackHeadersSession.cs" />
+    <Compile Include="Sessions\SetDGIDSession.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
