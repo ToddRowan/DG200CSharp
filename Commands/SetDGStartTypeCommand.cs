@@ -14,7 +14,7 @@ namespace kimandtodd.DG200CSharp.commands
         public static byte COLD_START = 0x84;
         public static byte WARM_START = 0x83;
         public static byte HOT_START = 0xc0;
-        public static byte FACTORY_RESET = 0x88;
+        public static byte FACTORY_RESET = 0x88; // Factory reset doesn't seem to do anything. It also lies about its payload size. 
 
         /// <summary>
         /// Constructor. Calls the parent to initialize. 
