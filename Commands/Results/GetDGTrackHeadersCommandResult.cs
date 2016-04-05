@@ -116,5 +116,17 @@ namespace kimandtodd.DG200CSharp.commandresults
         {
             return this._additionalSession;
         }
+
+        /// <summary>
+        /// Generates the track headers from the internal buffer. 
+        /// </summary>
+        /// <returns>Yields track headers that are stored.</returns>
+        public IEnumerable<DGTrackHeader> getTrackHeaders()
+        {
+            foreach(DGTrackHeader head in this._trackHeaders)
+            {
+                yield return head;
+            }
+        }
     }
 }
