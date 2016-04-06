@@ -94,7 +94,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         /// <returns>True if valid, false otherwise.</returns>
         public bool getIsValid()
         {
-            return this._isInvalid;
+            return !this._isInvalid;
         }
 
         // Break up the header data.
