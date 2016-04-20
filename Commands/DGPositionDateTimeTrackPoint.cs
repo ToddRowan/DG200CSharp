@@ -54,5 +54,14 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             string s = this.intToSixDigitString(DG200Utils.bigEndianArrayToInt32(speedSeg));
             this._speed = UInt32.Parse(s);
         }
+
+        /// <summary>
+        /// Get the speed reading for this track point, if any. 
+        /// </summary>
+        /// <returns>Kilometers * 100. So divide by 100 to the value in km/hr.</returns>
+        public override float getSpeed()
+        {
+            return this._speed / 100;
+        }
     }
 }

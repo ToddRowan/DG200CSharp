@@ -8,7 +8,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         protected DateTime _dt;
         protected Tuple<Int16, Double> _long;
         protected Tuple<Int16, Double> _lat;
-        protected UInt32 _altitude;
+        protected Int32 _altitude;
         protected UInt32 _speed;
         protected UInt16 _format;
         protected bool _isWayPoint;
@@ -108,7 +108,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         /// Get the speed reading for this track point, if any. 
         /// </summary>
         /// <returns>Kilometers * 100. So divide by 100 to the value in km/hr.</returns>
-        public virtual long getSpeed()
+        public virtual float getSpeed()
         {
             return 0;
         }

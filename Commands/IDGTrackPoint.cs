@@ -5,7 +5,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
     public interface IDGTrackPoint
     {
         long getAltitude();
-        long getSpeed();
+        float getSpeed();
         bool isWayPoint();
         Tuple<Int16, Double> getLatitude();
         Tuple<Int16, Double> getLongitude();
