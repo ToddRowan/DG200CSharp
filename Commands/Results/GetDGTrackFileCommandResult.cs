@@ -10,7 +10,7 @@ namespace kimandtodd.DG200CSharp.commandresults
     public class GetDGTrackFileCommandResult : BaseCommandResult
     {
         private UInt16 _trackFormat;
-        private List<IDGTrackPoint> _tracks;
+        private List<IDGTrackPoint> _trackpoints;
         private DGTrackPointFactory _factory;
 
         /// <summary>
@@ -18,11 +18,11 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// </summary>
         public GetDGTrackFileCommandResult() : base()
         {
-            this._tracks = new List<IDGTrackPoint>();
+            this._trackpoints = new List<IDGTrackPoint>();
         }
 
         /// <summary>
-        /// Pass the buffer to our factory that will 
+        /// Pass the buffer to our factory that will process the binary data and fill our trackpoint list. 
         /// </summary>
         protected override void processBuffer()
         {
@@ -35,7 +35,7 @@ namespace kimandtodd.DG200CSharp.commandresults
             // Get the trackpoint objects and store them. 
             foreach (IDGTrackPoint tp in this._factory.getTrackPoints())
             {
-                this._tracks.Add(tp);
+                this._trackpoints.Add(tp);
             }
         }
 
@@ -45,7 +45,16 @@ namespace kimandtodd.DG200CSharp.commandresults
         /// <returns>The complete track count.</returns>
         public int getTrackCount()
         {
-            return this._tracks.Count;
+            return this._trackpoints.Count;
+        }
+
+        /// <summary>
+        /// Ask the result for the trackpoints.
+        /// </summary>
+        /// <returns>The complete trackpoint list.</returns>
+        public List<IDGTrackPoint> getTrackPoints()
+        {
+            return this._trackpoints;
         }
     }
 }
