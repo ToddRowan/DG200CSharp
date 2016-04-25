@@ -178,8 +178,8 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
 
             int year = this._year + (this._year == 80 ? 1900 : 2000);
 
-            return year.ToString(fourZeroFmt) + sep + this._month.ToString(twoZeroFmt) + this._day.ToString(twoZeroFmt) + "T" +
-                        this._hour.ToString(twoZeroFmt) +  colon + this._minute.ToString(twoZeroFmt) + colon + this._second.ToString(twoZeroFmt) + "Z"
+            return year.ToString(fourZeroFmt) + sep + this._month.ToString(twoZeroFmt) + sep + this._day.ToString(twoZeroFmt) + "T" +
+                        this._hour.ToString(twoZeroFmt) + colon + this._minute.ToString(twoZeroFmt) + colon + this._second.ToString(twoZeroFmt) + "Z"
                         + (this._isFirstBlock?"*":"");
         }
     }
