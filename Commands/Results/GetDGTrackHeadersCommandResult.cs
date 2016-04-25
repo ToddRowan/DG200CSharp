@@ -52,9 +52,10 @@ namespace kimandtodd.DG200CSharp.commandresults
                 DG200FileLogger.Log("GetDGTrackHeadersCommandResult found " + sessionHeaderCount + " track headers this iteration. Total now: " + this._headerCount, 3);
                 this.getCurrentBuffer().Read(tmpArr, 0, tmpArr.Length);
                 this._nextTrackId = bigEndianArrayToInt16(tmpArr);
+                DG200FileLogger.Log("GetDGTrackHeadersCommandResult reading next track ID " + this._nextTrackId + ".", 3);
                 this._additionalSession = true;
 
-                for (int inx = 0; inx < _headerCount; inx++)
+                for (int inx = 0; inx < sessionHeaderCount; inx++)
                 {
                     byte[] headerBuf = new byte[GetDGTrackHeadersCommandResult.HEADERSIZE];
 
@@ -104,6 +105,7 @@ namespace kimandtodd.DG200CSharp.commandresults
         public override string ToString()
         {
             string headers = "";
+            DG200FileLogger.Log("Writing to string. trackheader count is: " + this._trackHeaders.Count, 3);
             foreach (DGTrackHeader th in this._trackHeaders )
             {
                 headers += th.ToString() + "\n";

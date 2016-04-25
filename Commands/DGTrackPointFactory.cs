@@ -87,6 +87,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         /// <returns>Yields track points that are stored.</returns>
         public IEnumerable<IDGTrackPoint> getTrackPoints()
         {
+            DG200FileLogger.Log("DGTrackPointFactory: Starting processing.", 3);
             // Send back the first one.
             yield return this._firstTrack;
 
@@ -95,7 +96,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             this._buf.Read(readArr, 0, readArr.Length);
 
             // Then move through the buffer and start building tracks.
-            while (!this.endingBytes(readArr))
+            while (this._buf.Position != this._buf.Length && !this.endingBytes(readArr))
             {
                 yield return this.getTrackPoint(readArr);
                 this._buf.Read(readArr, 0, readArr.Length);
@@ -104,7 +105,7 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             DG200FileLogger.Log("DGTrackPointFactory: Completed processing.", 3);
         }
 
-        // The ending sequence is six straight bytes of 0xff
+        // The early ending sequence is six straight bytes of 0xff
         private bool endingBytes(byte[] bytes)
         {
             bool retVar = true;
@@ -118,7 +119,5 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
             }
             return retVar;
         }
-
-
     }
 }
