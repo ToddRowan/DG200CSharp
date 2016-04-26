@@ -9,6 +9,8 @@ namespace kimandtodd.DG200CSharp.commandresults.resultitems
         public DGPositionDateTimeTrackPoint(byte[] input) : base(input)
         {
             this._format = BaseDGTrackPoint.FORMAT_POSITION_DATE_SPEED;
+
+            this.processSpeed();
         }
 
         protected override void processDateTime()
